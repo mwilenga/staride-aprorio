@@ -1,42 +1,22 @@
 <?php
 
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 class AddCurrencyNumericCodeToCountryTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            $columns = [
-                'currency_numeric_code' => function (Blueprint $table) {
-                    // $table->integer('currency_numeric_code')->nullable();
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('countries', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::recreateColumn(
+            'countries',
+            'currency_numeric_code',
+            fn (Blueprint $table) => $table->integer('currency_numeric_code')->nullable()
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            //
-        });
+        //
     }
 }

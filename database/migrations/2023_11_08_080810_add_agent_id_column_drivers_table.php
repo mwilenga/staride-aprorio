@@ -1,42 +1,23 @@
 <?php
 
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->foreign('agent_id')->references('id')->on('agents')->onUpdate('RESTRICT')->onDelete('CASCADE');
-
-            $columns = [
-                'agent_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('agent_id')->after('taxi_company_id')->nullable();
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('drivers', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::addColumnWithForeign(
+            'drivers',
+            'agent_id',
+            fn (Blueprint $table) => $table->unsignedInteger('agent_id')->after('taxi_company_id')->nullable(),
+            'agents'
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        //
+        MigrationSchema::dropForeignIfExists('drivers', 'agent_id');
     }
 };

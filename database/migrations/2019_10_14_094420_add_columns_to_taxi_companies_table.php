@@ -1,47 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddColumnsToTaxiCompaniesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('taxi_companies', function (Blueprint $table) {
-            $table->foreign('segment_id')->references('id')->on('segments')->onUpdate('restrict')->onDelete('cascade');
+        MigrationSchema::recreateColumn(
+            'taxi_companies',
+            'wallet_money',
+            fn (Blueprint $table) => $table->string('wallet_money')->nullable()->after('remember_token')
+        );
 
-            $columns = [
-                'wallet_money' => function (Blueprint $table) {
-                    $table->string('wallet_money')->nullable()->after('remember_token');
-                },
-                'segment_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('segment_id')->after('country_id')->nullable();
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('taxi_companies', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::addColumnWithForeign(
+            'taxi_companies',
+            'segment_id',
+            fn (Blueprint $table) => $table->unsignedInteger('segment_id')->after('country_id')->nullable(),
+            'segments',
+            'RESTRICT',
+            'CASCADE'
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('taxi_companies', function (Blueprint $table) {
-            //
-        });
+        //
     }
 }

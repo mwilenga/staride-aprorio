@@ -1,44 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddColumnToCancelReasonsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('cancel_reasons', function (Blueprint $table) {
-            $table->foreign('segment_id')->references('id')->on('segments')->onUpdate('RESTRICT')->onDelete('CASCADE');
-
-            $columns = [
-                'segment_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('segment_id')->nullable();
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('cancel_reasons', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::addColumnWithForeign(
+            'cancel_reasons',
+            'segment_id',
+            fn (Blueprint $table) => $table->unsignedInteger('segment_id')->nullable(),
+            'segments'
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('cancel_reasons', function (Blueprint $table) {
-            //
-        });
+        //
     }
 }

@@ -1,63 +1,40 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class AddColumnsToCorporatesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('corporates', function (Blueprint $table) {
-            $table->foreign('country_id')->references('id')->on('countries')->onUpdate('restrict')->onDelete('cascade');
-            $table->foreign('segment_id')->references('id')->on('segments')->onUpdate('restrict')->onDelete('cascade');
+        MigrationSchema::addColumnWithForeign(
+            'corporates',
+            'country_id',
+            fn (Blueprint $table) => $table->unsignedInteger('country_id')->after('merchant_id'),
+            'countries',
+            'RESTRICT',
+            'CASCADE'
+        );
 
-            $columns = [
-                'country_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('country_id')->after('merchant_id');
-                },
-                'segment_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('segment_id')->after('country_id')->nullable();
-                },
-                'password' => function (Blueprint $table) {
-                    $table->string('password')->after('email');
-                },
-                'corporate_logo' => function (Blueprint $table) {
-                    $table->string('corporate_logo')->after('password');
-                },
-                'remember_token' => function (Blueprint $table) {
-                    $table->string('remember_token')->nullable()->after('corporate_logo');
-                },
-                'alias_name' => function (Blueprint $table) {
-                    $table->string('alias_name')->after('corporate_name');
-                },
-                'status' => function (Blueprint $table) {
-                    $table->string('status')->default(1)->after('corporate_address');
-                },
-            ];
+        MigrationSchema::addColumnWithForeign(
+            'corporates',
+            'segment_id',
+            fn (Blueprint $table) => $table->unsignedInteger('segment_id')->after('country_id')->nullable(),
+            'segments',
+            'RESTRICT',
+            'CASCADE'
+        );
 
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('corporates', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::recreateColumn('corporates', 'password', fn (Blueprint $table) => $table->string('password')->after('email'));
+        MigrationSchema::recreateColumn('corporates', 'corporate_logo', fn (Blueprint $table) => $table->string('corporate_logo')->after('password'));
+        MigrationSchema::recreateColumn('corporates', 'remember_token', fn (Blueprint $table) => $table->string('remember_token')->nullable()->after('corporate_logo'));
+        MigrationSchema::recreateColumn('corporates', 'alias_name', fn (Blueprint $table) => $table->string('alias_name')->after('corporate_name'));
+        MigrationSchema::recreateColumn('corporates', 'status', fn (Blueprint $table) => $table->string('status')->default(1)->after('corporate_address'));
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('corporates', function (Blueprint $table) {
-            //
-        });
+        //
     }
 }

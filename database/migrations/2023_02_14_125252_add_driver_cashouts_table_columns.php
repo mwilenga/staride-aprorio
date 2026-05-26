@@ -1,40 +1,21 @@
 <?php
 
+use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 class AddDriverCashoutsTableColumns extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('driver_cashouts', function (Blueprint $table) {
-            $table->foreign('credit_account_detail_id')->references('id')->on('credit_account_details')->onUpdate('RESTRICT')->onDelete('CASCADE');
-
-            $columns = [
-                'credit_account_detail_id' => function (Blueprint $table) {
-                    $table->unsignedInteger('credit_account_detail_id')->nullable()->after("merchant_id");
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('driver_cashouts', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::addColumnWithForeign(
+            'driver_cashouts',
+            'credit_account_detail_id',
+            fn (Blueprint $table) => $table->unsignedInteger('credit_account_detail_id')->nullable()->after('merchant_id'),
+            'credit_account_details'
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         //

@@ -1,52 +1,35 @@
 <?php
 
+use App\Support\MigrationSchema;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class AddReferredByToDriversTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->foreign('referred_by')->references('id')->on('drivers')->onDelete('cascade');
-
-            $columns = [
-                'referred_by' => function (Blueprint $table) {
-                    $table->unsignedInteger('referred_by')->nullable();
-                },
-            ];
-
-            foreach ($columns as $column => $callback) {
-                if (!Schema::hasColumn('drivers', $column)) {
-                    $callback($table);
-                }
-            }
-});
+        MigrationSchema::addColumnWithForeign(
+            'drivers',
+            'referred_by',
+            fn (Blueprint $table) => $table->unsignedInteger('referred_by')->nullable(),
+            'drivers',
+            'RESTRICT',
+            'CASCADE'
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $columns = [
-                'referred_by',
-            ];
+        if (!Schema::hasTable('drivers')) {
+            return;
+        }
 
-            foreach ($columns as $column) {
-                if (Schema::hasColumn('drivers', $column)) {
-                    $table->dropColumn($column);
-                }
-            }
-});
+        MigrationSchema::dropForeignIfExists('drivers', 'referred_by');
+        if (Schema::hasColumn('drivers', 'referred_by')) {
+            Schema::table('drivers', function (Blueprint $table) {
+                $table->dropColumn('referred_by');
+            });
+        }
     }
 }
