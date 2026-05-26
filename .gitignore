@@ -19,7 +19,13 @@ public_html/hot
 
 storage/logs
 storage/framework
+# Merchant-specific generated locale files stay local; ship core admin strings via git
 resources/lang/*
+!resources/lang/en/
+!resources/lang/en/all_in_one.php
+!resources/lang/en/auth.php
+!resources/lang/en/common.php
+!resources/lang/en/admin.php
 .env
 Homestead.yaml
 Homestead.json

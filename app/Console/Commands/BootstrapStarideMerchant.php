@@ -60,11 +60,14 @@ class BootstrapStarideMerchant extends Command
                 'merchantSecretKey' => Str::random(32),
                 'merchantStatus' => 1,
                 'string_group' => 'all_in_one',
-                'string_file' => $alias . '_all_in_one_en',
+                'string_file' => 'all_in_one',
                 'access_pin' => null,
             ]);
 
-            Configuration::create(['merchant_id' => $merchant->id]);
+            Configuration::create([
+                'merchant_id' => $merchant->id,
+                'default_language' => 'en',
+            ]);
             DriverConfiguration::create(['merchant_id' => $merchant->id]);
             BookingConfiguration::create(['merchant_id' => $merchant->id]);
             ApplicationConfiguration::create(['merchant_id' => $merchant->id]);
