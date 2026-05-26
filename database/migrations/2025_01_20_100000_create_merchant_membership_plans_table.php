@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreign('merchant_id')->references('id')->on('merchants')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->float('price',10,2)->nullable();
             $table->string('period')->nullable();
-            $table->int('plan_type')->default(2);
-            $table->int('number_of_order')->nullable();
+            $table->integer('plan_type')->default(2);
+            $table->integer('number_of_order')->nullable();
             $table->timestamps();
         });
     }
