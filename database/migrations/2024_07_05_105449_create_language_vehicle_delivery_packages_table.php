@@ -12,7 +12,7 @@ return new class extends Migration
         if (!Schema::hasTable('language_vehicle_delivery_packages')) {
             Schema::create('language_vehicle_delivery_packages', function (Blueprint $table) {
                 $table->id();
-                $table->integer('vehicle_delivery_package_id')->unsigned();
+                $table->unsignedBigInteger('vehicle_delivery_package_id');
                 $table->foreign('vehicle_delivery_package_id', 'lvdp_vdp_id_fk')
                     ->references('id')
                     ->on('vehicle_delivery_packages')
@@ -25,6 +25,12 @@ return new class extends Migration
 
             return;
         }
+
+        MigrationSchema::recreateColumn(
+            'language_vehicle_delivery_packages',
+            'vehicle_delivery_package_id',
+            fn (Blueprint $table) => $table->unsignedBigInteger('vehicle_delivery_package_id')
+        );
 
         MigrationSchema::ensureForeign(
             'language_vehicle_delivery_packages',

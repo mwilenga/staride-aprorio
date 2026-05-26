@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('language_merchant_membership_plans');
+        Schema::dropIfExists('vehicle_delivery_packages');
     }
 };

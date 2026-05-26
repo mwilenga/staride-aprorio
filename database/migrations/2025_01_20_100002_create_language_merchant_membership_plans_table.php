@@ -12,7 +12,7 @@ return new class extends Migration
         if (!Schema::hasTable('language_merchant_membership_plans')) {
             Schema::create('language_merchant_membership_plans', function (Blueprint $table) {
                 $table->id();
-                $table->integer('merchant_membership_plan_id')->unsigned();
+                $table->unsignedBigInteger('merchant_membership_plan_id');
                 $table->foreign('merchant_membership_plan_id', 'lmmp_plan_id_fk')
                     ->references('id')
                     ->on('merchant_membership_plans')
@@ -27,6 +27,12 @@ return new class extends Migration
 
             return;
         }
+
+        MigrationSchema::recreateColumn(
+            'language_merchant_membership_plans',
+            'merchant_membership_plan_id',
+            fn (Blueprint $table) => $table->unsignedBigInteger('merchant_membership_plan_id')
+        );
 
         MigrationSchema::ensureForeign(
             'language_merchant_membership_plans',
