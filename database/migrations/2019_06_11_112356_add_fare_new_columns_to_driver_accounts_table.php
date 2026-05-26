@@ -14,16 +14,42 @@ class AddFareNewColumnsToDriverAccountsTable extends Migration
     public function up()
     {
         Schema::table('driver_accounts', function (Blueprint $table) {
-            $table->integer('total_trips_till_now')->default(0)->nullable()->after('total_trips');
-            $table->string('fare_amount')->default(0.0)->nullable()->after('amount');
-            $table->string('company_commission')->default(0.0)->nullable()->after('amount');
-            $table->string('toll_amount')->default(0.0)->nullable()->after('amount');
-            $table->string('tip_amount')->default(0.0)->nullable()->after('amount');
-            $table->string('cancellation_charges')->default(0.0)->nullable()->after('amount');
-            $table->string('referral_amount')->default(0.0)->nullable()->after('amount');
-            $table->string('cash_payment_received')->default(0.0)->nullable()->after('amount');
-            $table->string('trips_outstanding_sum')->default(0.0)->nullable()->after('amount');
-        });
+            $columns = [
+                'total_trips_till_now' => function (Blueprint $table) {
+                    $table->integer('total_trips_till_now')->default(0)->nullable()->after('total_trips');
+                },
+                'fare_amount' => function (Blueprint $table) {
+                    $table->string('fare_amount')->default(0.0)->nullable()->after('amount');
+                },
+                'company_commission' => function (Blueprint $table) {
+                    $table->string('company_commission')->default(0.0)->nullable()->after('amount');
+                },
+                'toll_amount' => function (Blueprint $table) {
+                    $table->string('toll_amount')->default(0.0)->nullable()->after('amount');
+                },
+                'tip_amount' => function (Blueprint $table) {
+                    $table->string('tip_amount')->default(0.0)->nullable()->after('amount');
+                },
+                'cancellation_charges' => function (Blueprint $table) {
+                    $table->string('cancellation_charges')->default(0.0)->nullable()->after('amount');
+                },
+                'referral_amount' => function (Blueprint $table) {
+                    $table->string('referral_amount')->default(0.0)->nullable()->after('amount');
+                },
+                'cash_payment_received' => function (Blueprint $table) {
+                    $table->string('cash_payment_received')->default(0.0)->nullable()->after('amount');
+                },
+                'trips_outstanding_sum' => function (Blueprint $table) {
+                    $table->string('trips_outstanding_sum')->default(0.0)->nullable()->after('amount');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_accounts', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -36,15 +62,23 @@ class AddFareNewColumnsToDriverAccountsTable extends Migration
     public function down()
     {
         Schema::table('driver_accounts', function (Blueprint $table) {
-            $table->dropColumn('total_trips_till_now');
-            $table->dropColumn('fare_amount');
-            $table->dropColumn('company_commission');
-            $table->dropColumn('toll_amount');
-            $table->dropColumn('tip_amount');
-            $table->dropColumn('cancellation_charges');
-            $table->dropColumn('referral_amount');
-            $table->dropColumn('cash_payment_received');
-            $table->dropColumn('trips_outstanding_sum');
-        });
+            $columns = [
+                'total_trips_till_now',
+                'fare_amount',
+                'company_commission',
+                'toll_amount',
+                'tip_amount',
+                'cancellation_charges',
+                'referral_amount',
+                'cash_payment_received',
+                'trips_outstanding_sum',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('driver_accounts', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

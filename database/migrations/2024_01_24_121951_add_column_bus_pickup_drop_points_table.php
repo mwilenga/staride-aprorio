@@ -14,10 +14,24 @@ return new class extends Migration
     public function up()
     {
         Schema::table('bus_pickup_drop_points', function (Blueprint $table) {
-            $table->string('latitude')->nullable()->after("sequence");
-            $table->string('longitude')->nullable()->after("latitude");
-            $table->string('address')->nullable()->after("longitude");
-        });
+            $columns = [
+                'latitude' => function (Blueprint $table) {
+                    $table->string('latitude')->nullable()->after("sequence");
+                },
+                'longitude' => function (Blueprint $table) {
+                    $table->string('longitude')->nullable()->after("latitude");
+                },
+                'address' => function (Blueprint $table) {
+                    $table->string('address')->nullable()->after("longitude");
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('bus_pickup_drop_points', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -28,9 +42,17 @@ return new class extends Migration
     public function down()
     {
         Schema::table('bus_pickup_drop_points', function (Blueprint $table) {
-            $table->dropColumn('latitude');
-            $table->dropColumn('longitude');
-            $table->dropColumn('address');
-        });
+            $columns = [
+                'latitude',
+                'longitude',
+                'address',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('bus_pickup_drop_points', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 };

@@ -14,8 +14,18 @@ class AddColumnToDriverWalletTransactions extends Migration
     public function up()
     {
         Schema::table('driver_wallet_transactions', function (Blueprint $table) {
-            $table->string('transaction_id')->nullable();
-        });
+            $columns = [
+                'transaction_id' => function (Blueprint $table) {
+                    $table->string('transaction_id')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_wallet_transactions', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

@@ -14,10 +14,21 @@ class AddColumnToConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            //
-            $table->tinyInteger('driver_address')->nullable();
-            $table->integer('reminder_doc_expire')->nullable()->default(1)->comment('In Days');
-        });
+            $columns = [
+                'driver_address' => function (Blueprint $table) {
+                    // $table->tinyInteger('driver_address')->nullable();
+                },
+                'reminder_doc_expire' => function (Blueprint $table) {
+                    $table->integer('reminder_doc_expire')->nullable()->default(1)->comment('In Days');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

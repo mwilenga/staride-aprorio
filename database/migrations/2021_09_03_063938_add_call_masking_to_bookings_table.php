@@ -14,10 +14,24 @@ class AddCallMaskingToBookingsTable extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->string('user_masked_number')->nullable();
-            $table->string('driver_masked_number')->nullable();
-            $table->string('session_sid')->nullable();
-        });
+            $columns = [
+                'user_masked_number' => function (Blueprint $table) {
+                    $table->string('user_masked_number')->nullable();
+                },
+                'driver_masked_number' => function (Blueprint $table) {
+                    $table->string('driver_masked_number')->nullable();
+                },
+                'session_sid' => function (Blueprint $table) {
+                    $table->string('session_sid')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('bookings', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

@@ -14,8 +14,18 @@ class AddRewardPointsToApplicationConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('application_configurations', function (Blueprint $table) {
-          $table->unsignedTinyInteger('reward_points')->default(0)->nullable();
-        });
+          $columns = [
+              'reward_points' => function (Blueprint $table) {
+                  $table->unsignedTinyInteger('reward_points')->default(0)->nullable();
+              },
+          ];
+
+          foreach ($columns as $column => $callback) {
+              if (!Schema::hasColumn('application_configurations', $column)) {
+                  $callback($table);
+              }
+          }
+});
     }
 
     /**
@@ -26,7 +36,15 @@ class AddRewardPointsToApplicationConfigurationsTable extends Migration
     public function down()
     {
         Schema::table('application_configurations', function (Blueprint $table) {
-          $table->dropColumn('reward_points');
-        });
+          $columns = [
+              'reward_points',
+          ];
+
+          foreach ($columns as $column) {
+              if (Schema::hasColumn('application_configurations', $column)) {
+                  $table->dropColumn($column);
+              }
+          }
+});
     }
 }

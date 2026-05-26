@@ -14,8 +14,18 @@ class AddColumnToEmailTemplates extends Migration
     public function up()
     {
         Schema::table('email_templates', function (Blueprint $table) {
-            $table->longText('social_links')->nullable();
-        });
+            $columns = [
+                'social_links' => function (Blueprint $table) {
+                    $table->longText('social_links')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('email_templates', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

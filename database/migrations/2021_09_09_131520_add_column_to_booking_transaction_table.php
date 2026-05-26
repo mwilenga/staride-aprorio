@@ -14,8 +14,18 @@ class AddColumnToBookingTransactionTable extends Migration
     public function up()
     {
         Schema::table('booking_transactions', function (Blueprint $table) {
-            $table->string('driver_agency_total_payout')->nullable();
-        });
+            $columns = [
+                'driver_agency_total_payout' => function (Blueprint $table) {
+                    $table->string('driver_agency_total_payout')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('booking_transactions', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

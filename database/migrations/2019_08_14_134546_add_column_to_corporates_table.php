@@ -14,10 +14,24 @@ class AddColumnToCorporatesTable extends Migration
     public function up()
     {
         Schema::table('corporates', function (Blueprint $table) {
-            $table->string('wallet_balance')->default('0.0')->after('remember_token');
-            $table->tinyInteger('price_type')->default(1)->nullable();
-            $table->string('price_card_amount')->nullable();
-        });
+            $columns = [
+                'wallet_balance' => function (Blueprint $table) {
+                    $table->string('wallet_balance')->default('0.0')->after('remember_token');
+                },
+                'price_type' => function (Blueprint $table) {
+                    $table->tinyInteger('price_type')->default(1)->nullable();
+                },
+                'price_card_amount' => function (Blueprint $table) {
+                    $table->string('price_card_amount')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('corporates', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

@@ -14,9 +14,20 @@ class AddColumnToFailBookingsTable extends Migration
     public function up()
     {
         Schema::table('fail_bookings', function (Blueprint $table) {
-            $table->unsignedInteger('corporate_id')->nullable()->after('merchant_id');
             $table->foreign('corporate_id')->references('id')->on('corporates')->onUpdate('RESTRICT')->onDelete('CASCADE');
-        });
+
+            $columns = [
+                'corporate_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('corporate_id')->nullable()->after('merchant_id');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('fail_bookings', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

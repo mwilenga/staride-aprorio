@@ -14,9 +14,20 @@ class AddHandymanOrderIdToBookingTransactionTable extends Migration
     public function up()
     {
         Schema::table('booking_transactions', function (Blueprint $table) {
-//            $table->unsignedInteger('handyman_order_id')->nullable()->after('order_id');
-//            $table->foreign('handyman_order_id')->references('id')->on('handyman_orders')->onDelete('cascade');
-        });
+            //            $table->foreign('handyman_order_id')->references('id')->on('handyman_orders')->onDelete('cascade');
+
+            $columns = [
+                'handyman_order_id' => function (Blueprint $table) {
+                    // $table->unsignedInteger('handyman_order_id')->nullable()->after('order_id');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('booking_transactions', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

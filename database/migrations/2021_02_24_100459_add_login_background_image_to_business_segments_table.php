@@ -14,9 +14,18 @@ class AddLoginBackgroundImageToBusinessSegmentsTable extends Migration
     public function up()
     {
         Schema::table('business_segments', function (Blueprint $table) {
-            // column is duplicate
-//            $table->string('login_background_image')->nullable();
-        });
+            $columns = [
+                'login_background_image' => function (Blueprint $table) {
+                    // column is duplicate // $table->string('login_background_image')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('business_segments', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,8 +36,15 @@ class AddLoginBackgroundImageToBusinessSegmentsTable extends Migration
     public function down()
     {
         Schema::table('business_segments', function (Blueprint $table) {
-            //
-//             $table->dropColumn('login_background_image');
-        });
+            $columns = [
+                'login_background_image',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('business_segments', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

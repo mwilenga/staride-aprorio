@@ -14,9 +14,20 @@ class AddColumnToDriverDocumentsTable extends Migration
     public function up()
     {
         Schema::table('driver_documents', function (Blueprint $table) {
-            $table->unsignedInteger('temp_reject_reason_id')->nullable()->after('temp_doc_verification_status');
             $table->foreign('temp_reject_reason_id')->references('id')->on('reject_reasons')->onUpdate('RESTRICT')->onDelete('CASCADE');
-        });
+
+            $columns = [
+                'temp_reject_reason_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('temp_reject_reason_id')->nullable()->after('temp_doc_verification_status');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_documents', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

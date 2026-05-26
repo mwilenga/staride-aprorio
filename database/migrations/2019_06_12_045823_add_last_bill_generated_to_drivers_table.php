@@ -14,8 +14,18 @@ class AddLastBillGeneratedToDriversTable extends Migration
     public function up()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->string('last_bill_generated')->nullable()->after('merchant_id');
-        });
+            $columns = [
+                'last_bill_generated' => function (Blueprint $table) {
+                    $table->string('last_bill_generated')->nullable()->after('merchant_id');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('drivers', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -26,7 +36,15 @@ class AddLastBillGeneratedToDriversTable extends Migration
     public function down()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->dropColumn('last_bill_generated');
-        });
+            $columns = [
+                'last_bill_generated',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('drivers', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

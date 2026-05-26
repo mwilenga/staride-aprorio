@@ -14,12 +14,27 @@ class AddUserIdAndBusinessSegmentIdToChatTable extends Migration
     public function up()
     {
         Schema::table('chats', function (Blueprint $table) {
-            //
-            $table->unsignedInteger('user_id')->nullable()->after("id");
-            $table->unsignedInteger('order_id')->nullable()->after("booking_id");
-            $table->unsignedInteger('handyman_order_id')->nullable()->after("order_id");
-            $table->unsignedInteger('business_segment_id')->nullable()->after("handyman_order_id");
-        });
+            $columns = [
+                'user_id' => function (Blueprint $table) {
+                    // $table->unsignedInteger('user_id')->nullable()->after("id");
+                },
+                'order_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('order_id')->nullable()->after("booking_id");
+                },
+                'handyman_order_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('handyman_order_id')->nullable()->after("order_id");
+                },
+                'business_segment_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('business_segment_id')->nullable()->after("handyman_order_id");
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('chats', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

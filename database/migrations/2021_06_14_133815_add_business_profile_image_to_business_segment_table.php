@@ -14,9 +14,18 @@ class AddBusinessProfileImageToBusinessSegmentTable extends Migration
     public function up()
     {
         Schema::table('business_segments', function (Blueprint $table) {
-            //
-            $table->string('business_profile_image')->nullable();
-        });
+            $columns = [
+                'business_profile_image' => function (Blueprint $table) {
+                    // $table->string('business_profile_image')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('business_segments', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,8 +36,15 @@ class AddBusinessProfileImageToBusinessSegmentTable extends Migration
     public function down()
     {
         Schema::table('business_segments', function (Blueprint $table) {
-            //
-            $table->dropColumn('business_profile_image');
-        });
+            $columns = [
+                'business_profile_image',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('business_segments', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

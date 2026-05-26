@@ -14,11 +14,27 @@ class AddColumnsToWebSiteHomePages extends Migration
     public function up()
     {
         Schema::table('web_site_home_pages', function (Blueprint $table) {
-            $table->string('user_estimate_image')->nullable();
-            $table->string('featured_component_main_image')->nullable();
-            $table->string('user_login_bg_image')->nullable();
-            $table->string('driver_login_bg_image')->nullable();
-        });
+            $columns = [
+                'user_estimate_image' => function (Blueprint $table) {
+                    $table->string('user_estimate_image')->nullable();
+                },
+                'featured_component_main_image' => function (Blueprint $table) {
+                    $table->string('featured_component_main_image')->nullable();
+                },
+                'user_login_bg_image' => function (Blueprint $table) {
+                    $table->string('user_login_bg_image')->nullable();
+                },
+                'driver_login_bg_image' => function (Blueprint $table) {
+                    $table->string('driver_login_bg_image')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('web_site_home_pages', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -29,8 +45,15 @@ class AddColumnsToWebSiteHomePages extends Migration
     public function down()
     {
         Schema::table('web_site_home_pages', function (Blueprint $table) {
-            $table->dropColumn(['user_estimate_image' , 'user_login_bg_image' , 'driver_login_bg_image']);
-            $table->dropColumn('featured_component_main_image');
-        });
+            $columns = [
+                'featured_component_main_image',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('web_site_home_pages', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

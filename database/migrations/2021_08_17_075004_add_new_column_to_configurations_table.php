@@ -14,8 +14,18 @@ class AddNewColumnToConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->tinyInteger('manual_downgrade_enable')->after('no_driver_availabe_enable')->default('0')->nullable();
-        });
+            $columns = [
+                'manual_downgrade_enable' => function (Blueprint $table) {
+                    $table->tinyInteger('manual_downgrade_enable')->after('no_driver_availabe_enable')->default('0')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

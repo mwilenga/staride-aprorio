@@ -14,10 +14,26 @@ class AddColumnsToDriverConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('driver_configurations', function (Blueprint $table) {
-          $table->unsignedTinyInteger('driver_penalty_enable')->nullable();
-    			$table->unsignedInteger('driver_cancel_count')->nullable();
-    			$table->unsignedInteger('driver_penalty_period')->nullable();
-    			$table->unsignedInteger('driver_penalty_period_next')->nullable();
+          $columns = [
+              'driver_penalty_enable' => function (Blueprint $table) {
+                  $table->unsignedTinyInteger('driver_penalty_enable')->nullable();
+              },
+              'driver_cancel_count' => function (Blueprint $table) {
+                  $table->unsignedInteger('driver_cancel_count')->nullable();
+              },
+              'driver_penalty_period' => function (Blueprint $table) {
+                  $table->unsignedInteger('driver_penalty_period')->nullable();
+              },
+              'driver_penalty_period_next' => function (Blueprint $table) {
+                  $table->unsignedInteger('driver_penalty_period_next')->nullable();
+              },
+          ];
+
+          foreach ($columns as $column => $callback) {
+              if (!Schema::hasColumn('driver_configurations', $column)) {
+                  $callback($table);
+              }
+          }
         });
     }
 
@@ -29,10 +45,18 @@ class AddColumnsToDriverConfigurationsTable extends Migration
     public function down()
     {
         Schema::table('driver_configurations', function (Blueprint $table) {
-          $table->dropColumn('driver_penalty_enable');
-    			$table->dropColumn('driver_cancel_count');
-    			$table->dropColumn('driver_penalty_period');
-    			$table->dropColumn('driver_penalty_period_next');
+          $columns = [
+              'driver_penalty_enable',
+              'driver_cancel_count',
+              'driver_penalty_period',
+              'driver_penalty_period_next',
+          ];
+
+          foreach ($columns as $column) {
+              if (Schema::hasColumn('driver_configurations', $column)) {
+                  $table->dropColumn($column);
+              }
+          }
         });
     }
 }

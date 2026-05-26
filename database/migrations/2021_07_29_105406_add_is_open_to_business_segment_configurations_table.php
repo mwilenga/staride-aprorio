@@ -14,9 +14,18 @@ class AddIsOpenToBusinessSegmentConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('business_segment_configurations', function (Blueprint $table) {
-            //
-            $table->tinyInteger('is_open')->default(1)->comment('1:Yes, 2:No');
-        });
+            $columns = [
+                'is_open' => function (Blueprint $table) {
+                    // $table->tinyInteger('is_open')->default(1)->comment('1:Yes, 2:No');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('business_segment_configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,8 +36,15 @@ class AddIsOpenToBusinessSegmentConfigurationsTable extends Migration
     public function down()
     {
         Schema::table('business_segment_configurations', function (Blueprint $table) {
-            //
-            $table->dropColumn('is_open');
-        });
+            $columns = [
+                'is_open',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('business_segment_configurations', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

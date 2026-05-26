@@ -14,8 +14,18 @@ class AddStripeconnectToCountriesTable extends Migration
     public function up()
     {
         Schema::table('countries', function (Blueprint $table) {
-            $table->string('short_code' , 10)->nullable();
-        });
+            $columns = [
+                'short_code' => function (Blueprint $table) {
+                    $table->string('short_code' , 10)->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('countries', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -26,7 +36,15 @@ class AddStripeconnectToCountriesTable extends Migration
     public function down()
     {
         Schema::table('countries', function (Blueprint $table) {
-            $table->dropColumn(['short_code']);
-        });
+            $columns = [
+                'short_code',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('countries', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

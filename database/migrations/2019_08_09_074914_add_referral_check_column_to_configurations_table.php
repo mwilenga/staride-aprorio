@@ -14,10 +14,24 @@ class AddReferralCheckColumnToConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->tinyInteger('referral_code_enable')->default(2)->nullable();
-            $table->tinyInteger('referral_code_mandatory_driver_signup')->default(2)->nullable();
-            $table->tinyInteger('referral_code_mandatory_user_signup')->default(2)->nullable();
-        });
+            $columns = [
+                'referral_code_enable' => function (Blueprint $table) {
+                    $table->tinyInteger('referral_code_enable')->default(2)->nullable();
+                },
+                'referral_code_mandatory_driver_signup' => function (Blueprint $table) {
+                    $table->tinyInteger('referral_code_mandatory_driver_signup')->default(2)->nullable();
+                },
+                'referral_code_mandatory_user_signup' => function (Blueprint $table) {
+                    $table->tinyInteger('referral_code_mandatory_user_signup')->default(2)->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

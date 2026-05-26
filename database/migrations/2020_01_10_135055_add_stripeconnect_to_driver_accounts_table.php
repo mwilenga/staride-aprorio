@@ -14,8 +14,18 @@ class AddStripeconnectToDriverAccountsTable extends Migration
     public function up()
     {
         Schema::table('driver_accounts', function (Blueprint $table) {
-            $table->unsignedTinyInteger('instant_settlement')->default(0)->comment('0-no, 1-yes');
-        });
+            $columns = [
+                'instant_settlement' => function (Blueprint $table) {
+                    $table->unsignedTinyInteger('instant_settlement')->default(0)->comment('0-no, 1-yes');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_accounts', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -26,7 +36,15 @@ class AddStripeconnectToDriverAccountsTable extends Migration
     public function down()
     {
         Schema::table('driver_accounts', function (Blueprint $table) {
-            $table->dropColumn(['instant_settlement']);
-        });
+            $columns = [
+                'instant_settlement',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('driver_accounts', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

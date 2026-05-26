@@ -15,8 +15,18 @@ class AddNetworkCodeToUsers extends Migration
     {
         if(Schema::hasTable('users')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->string('network_code')->nullable();
-            });
+                $columns = [
+                    'network_code' => function (Blueprint $table) {
+                        $table->string('network_code')->nullable();
+                    },
+                ];
+
+                foreach ($columns as $column => $callback) {
+                    if (!Schema::hasColumn('users', $column)) {
+                        $callback($table);
+                    }
+                }
+});
         }
     }
 
@@ -28,7 +38,15 @@ class AddNetworkCodeToUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('network_code');
-        });
+            $columns = [
+                'network_code',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('users', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

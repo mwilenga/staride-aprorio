@@ -14,9 +14,18 @@ class AddCardHolderToDriverCardsTable extends Migration
     public function up()
     {
         Schema::table('driver_cards', function (Blueprint $table) {
-            //
-            $table->string('card_holder')->nullable()->after('token');
-        });
+            $columns = [
+                'card_holder' => function (Blueprint $table) {
+                    // $table->string('card_holder')->nullable()->after('token');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_cards', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

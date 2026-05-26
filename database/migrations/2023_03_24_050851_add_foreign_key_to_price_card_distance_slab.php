@@ -14,8 +14,10 @@ class AddForeignKeyToPriceCardDistanceSlab extends Migration
     public function up()
     {
         Schema::table('price_cards', function (Blueprint $table) {
-            //
-            $table->integer('distance_slab_id')->unsigned()->nullable();
+            if (!Schema::hasColumn('price_cards', 'distance_slab_id')) {
+                $table->integer('distance_slab_id')->unsigned()->nullable();
+            }
+
             $table->foreign('distance_slab_id')->references('id')->on('distance_slabs')->onUpdate('RESTRICT')->onDelete('CASCADE');
         });
     }

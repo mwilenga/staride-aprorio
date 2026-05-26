@@ -14,8 +14,18 @@ class AddColumnToDriversTable extends Migration
     public function up()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->string('temp_admin_msg')->nullable()->after('admin_msg');
-        });
+            $columns = [
+                'temp_admin_msg' => function (Blueprint $table) {
+                    $table->string('temp_admin_msg')->nullable()->after('admin_msg');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('drivers', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

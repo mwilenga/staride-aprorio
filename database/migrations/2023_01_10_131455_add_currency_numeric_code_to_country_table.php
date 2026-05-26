@@ -14,9 +14,18 @@ class AddCurrencyNumericCodeToCountryTable extends Migration
     public function up()
     {
         Schema::table('countries', function (Blueprint $table) {
-            //
-            $table->integer('currency_numeric_code')->nullable();
-        });
+            $columns = [
+                'currency_numeric_code' => function (Blueprint $table) {
+                    // $table->integer('currency_numeric_code')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('countries', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

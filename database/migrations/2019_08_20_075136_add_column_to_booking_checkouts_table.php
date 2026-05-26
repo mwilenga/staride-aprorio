@@ -14,11 +14,26 @@ class AddColumnToBookingCheckoutsTable extends Migration
     public function up()
     {
         Schema::table('booking_checkouts', function (Blueprint $table) {
-            $table->unsignedInteger('corporate_id')->nullable()->after('merchant_id');
             $table->foreign('corporate_id')->references('id')->on('corporates')->onUpdate('RESTRICT')->onDelete('CASCADE');
-            $table->longText('additional_information')->after('additional_notes')->nullable();
-            $table->integer('outstation_ride_type')->nullable();
-        });
+
+            $columns = [
+                'corporate_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('corporate_id')->nullable()->after('merchant_id');
+                },
+                'additional_information' => function (Blueprint $table) {
+                    $table->longText('additional_information')->after('additional_notes')->nullable();
+                },
+                'outstation_ride_type' => function (Blueprint $table) {
+                    $table->integer('outstation_ride_type')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('booking_checkouts', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

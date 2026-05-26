@@ -15,8 +15,18 @@ class AddNetworkCodeToDrivers extends Migration
     {
         if(Schema::hasTable('drivers')) {
             Schema::table('drivers', function (Blueprint $table) {
-                $table->string('network_code')->nullable();
-            });
+                $columns = [
+                    'network_code' => function (Blueprint $table) {
+                        $table->string('network_code')->nullable();
+                    },
+                ];
+
+                foreach ($columns as $column => $callback) {
+                    if (!Schema::hasColumn('drivers', $column)) {
+                        $callback($table);
+                    }
+                }
+});
         }
     }
 
@@ -28,7 +38,15 @@ class AddNetworkCodeToDrivers extends Migration
     public function down()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->dropColumn('drivers');
-        });
+            $columns = [
+                'drivers',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('drivers', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

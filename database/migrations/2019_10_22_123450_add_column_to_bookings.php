@@ -14,8 +14,18 @@ class AddColumnToBookings extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->string('ride_radius')->nullable()->after('settlement');
-        });
+            $columns = [
+                'ride_radius' => function (Blueprint $table) {
+                    $table->string('ride_radius')->nullable()->after('settlement');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('bookings', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

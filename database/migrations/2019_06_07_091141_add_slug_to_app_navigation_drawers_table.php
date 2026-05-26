@@ -14,9 +14,18 @@ class AddSlugToAppNavigationDrawersTable extends Migration
     public function up()
     {
         Schema::table('app_navigation_drawers', function (Blueprint $table) {
-            //
-            $table->text('slug')->after('status')->nullable();
-        });
+            $columns = [
+                'slug' => function (Blueprint $table) {
+                    // $table->text('slug')->after('status')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('app_navigation_drawers', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,8 +36,15 @@ class AddSlugToAppNavigationDrawersTable extends Migration
     public function down()
     {
         Schema::table('app_navigation_drawers', function (Blueprint $table) {
-            //
-            $table->dropColumn('slug');
-        });
+            $columns = [
+                'slug',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('app_navigation_drawers', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

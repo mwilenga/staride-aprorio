@@ -14,9 +14,20 @@ class AddReferredByToDriversTable extends Migration
     public function up()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->unsignedInteger('referred_by')->nullable();
             $table->foreign('referred_by')->references('id')->on('drivers')->onDelete('cascade');
-        });
+
+            $columns = [
+                'referred_by' => function (Blueprint $table) {
+                    $table->unsignedInteger('referred_by')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('drivers', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,7 +38,15 @@ class AddReferredByToDriversTable extends Migration
     public function down()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->dropColumn('referred_by');
-        });
+            $columns = [
+                'referred_by',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('drivers', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

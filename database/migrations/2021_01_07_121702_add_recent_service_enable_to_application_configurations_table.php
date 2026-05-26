@@ -14,9 +14,18 @@ class AddRecentServiceEnableToApplicationConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('application_configurations', function (Blueprint $table) {
-            //
-            $table->tinyInteger('recent_services_enable')->default(1)->comment('1 : enable 2: disable')->nullable();
-        });
+            $columns = [
+                'recent_services_enable' => function (Blueprint $table) {
+                    // $table->tinyInteger('recent_services_enable')->default(1)->comment('1 : enable 2: disable')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('application_configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -27,8 +36,15 @@ class AddRecentServiceEnableToApplicationConfigurationsTable extends Migration
     public function down()
     {
         Schema::table('application_configurations', function (Blueprint $table) {
-            //
-            $table->dropColumn('recent_services_enable');
-        });
+            $columns = [
+                'recent_services_enable',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('application_configurations', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

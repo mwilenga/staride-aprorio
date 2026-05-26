@@ -14,8 +14,18 @@ class AddColumnToDriverCardsTable extends Migration
     public function up()
     {
         Schema::table('driver_cards', function (Blueprint $table) {
-            $table->string('driver_token')->nullable()->after('exp_year');
-        });
+            $columns = [
+                'driver_token' => function (Blueprint $table) {
+                    $table->string('driver_token')->nullable()->after('exp_year');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_cards', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

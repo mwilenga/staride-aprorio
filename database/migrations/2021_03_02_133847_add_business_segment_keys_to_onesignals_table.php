@@ -14,11 +14,24 @@ class AddBusinessSegmentKeysToOnesignalsTable extends Migration
     public function up()
     {
         Schema::table('onesignals', function (Blueprint $table) {
-            //
-            $table->string('business_segment_application_key')->nullable();
-            $table->string('business_segment_rest_key')->nullable();
-            $table->string('business_segment_channel_id')->nullable();
-        });
+            $columns = [
+                'business_segment_application_key' => function (Blueprint $table) {
+                    // $table->string('business_segment_application_key')->nullable();
+                },
+                'business_segment_rest_key' => function (Blueprint $table) {
+                    $table->string('business_segment_rest_key')->nullable();
+                },
+                'business_segment_channel_id' => function (Blueprint $table) {
+                    $table->string('business_segment_channel_id')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('onesignals', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
@@ -29,10 +42,17 @@ class AddBusinessSegmentKeysToOnesignalsTable extends Migration
     public function down()
     {
         Schema::table('onesignals', function (Blueprint $table) {
-            //
-            $table->dropColumn('business_segment_application_key');
-            $table->dropColumn('business_segment_rest_key');
-            $table->dropColumn('business_segment_channel_id');
-        });
+            $columns = [
+                'business_segment_application_key',
+                'business_segment_rest_key',
+                'business_segment_channel_id',
+            ];
+
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('onesignals', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+});
     }
 }

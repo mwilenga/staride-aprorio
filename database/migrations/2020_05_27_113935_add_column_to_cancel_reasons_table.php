@@ -14,9 +14,20 @@ class AddColumnToCancelReasonsTable extends Migration
     public function up()
     {
         Schema::table('cancel_reasons', function (Blueprint $table) {
-            $table->unsignedInteger('segment_id')->nullable();
             $table->foreign('segment_id')->references('id')->on('segments')->onUpdate('RESTRICT')->onDelete('CASCADE');
-        });
+
+            $columns = [
+                'segment_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('segment_id')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('cancel_reasons', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

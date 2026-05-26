@@ -14,9 +14,20 @@ class AddColumnProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->bigInteger('brand_id')->unsigned()->after('sku_id')->nullable();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('CASCADE');
-        });
+
+            $columns = [
+                'brand_id' => function (Blueprint $table) {
+                    $table->bigInteger('brand_id')->unsigned()->after('sku_id')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('products', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

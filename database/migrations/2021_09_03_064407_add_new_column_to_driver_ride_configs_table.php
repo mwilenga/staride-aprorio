@@ -14,8 +14,18 @@ class AddNewColumnToDriverRideConfigsTable extends Migration
     public function up()
     {
         Schema::table('driver_ride_configs', function (Blueprint $table) {
-            $table->tinyInteger('manual_downgradation')->after('auto_upgradetion')->default('2');
-        });
+            $columns = [
+                'manual_downgradation' => function (Blueprint $table) {
+                    $table->tinyInteger('manual_downgradation')->after('auto_upgradetion')->default('2');
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('driver_ride_configs', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

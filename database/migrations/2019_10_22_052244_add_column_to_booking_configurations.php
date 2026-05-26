@@ -14,8 +14,18 @@ class AddColumnToBookingConfigurations extends Migration
     public function up()
     {
         Schema::table('booking_configurations', function (Blueprint $table) {
-            $table->string("driver_ride_radius_request")->nullable();
-        });
+            $columns = [
+                'driver_ride_radius_request' => function (Blueprint $table) {
+                    $table->string("driver_ride_radius_request")->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('booking_configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

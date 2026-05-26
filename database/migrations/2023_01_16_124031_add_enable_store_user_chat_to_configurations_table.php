@@ -14,9 +14,18 @@ class AddEnableStoreUserChatToConfigurationsTable extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            //
-            $table->tinyInteger('enable_store_user_chat')->nullable()->default(2);
-        });
+            $columns = [
+                'enable_store_user_chat' => function (Blueprint $table) {
+                    // $table->tinyInteger('enable_store_user_chat')->nullable()->default(2);
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('configurations', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**

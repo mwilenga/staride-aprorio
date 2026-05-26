@@ -14,9 +14,20 @@ return new class extends Migration
     public function up()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->unsignedInteger('agent_id')->after('taxi_company_id')->nullable();
             $table->foreign('agent_id')->references('id')->on('agents')->onUpdate('RESTRICT')->onDelete('CASCADE');
-        });
+
+            $columns = [
+                'agent_id' => function (Blueprint $table) {
+                    $table->unsignedInteger('agent_id')->after('taxi_company_id')->nullable();
+                },
+            ];
+
+            foreach ($columns as $column => $callback) {
+                if (!Schema::hasColumn('drivers', $column)) {
+                    $callback($table);
+                }
+            }
+});
     }
 
     /**
