@@ -98,7 +98,7 @@ Route::any('/yas/fail', 'PaymentMethods\Yas\YasController@YasPayFail')->name('ya
 
 //latra 
 Route::any('/.well-known/tz-e-ticketing-server', 'App\Http\Controllers\Integrations\CommonController@discovery')->name('latra-public-key');
-Route::any('/jwks', 'App\Http\Controllers\Integrations\CommonController@jwks')->name('latra-public-key');
+Route::any('/jwks', 'App\Http\Controllers\Integrations\CommonController@jwks')->name('latra-jwks');
 
 //xr pay
 Route::any('/.well-known/jwks.json', 'PaymentMethods\XR\XRController@jwks')->name('xr-public-key');
@@ -857,7 +857,7 @@ Route::prefix('user')->group(function () {
         //        Route::post('/checkEstimate', 'Api\BookingController@estimate');
         Route::post('/AddWalletMoneyCoupon', 'Api\CommonController@AddWalletMoneyCoupon');
         Route::post('/configuration', ['as' => 'api.user.configuration', 'uses' => 'Api\UserController@Configuration']);
-        Route::get('/fastlane-configuration', ['as' => 'api.user.configuration', 'uses' => 'Api\UserController@FastLaneConfiguration']);
+        Route::get('/fastlane-configuration', ['as' => 'api.user.fastlane-configuration', 'uses' => 'Api\UserController@FastLaneConfiguration']);
         Route::post('/countryList', ['as' => 'api.user.countryList', 'uses' => 'Api\CommonController@CountryList']);
 
         Route::group(['middleware' => ['limit_api']], function () {
@@ -1508,7 +1508,7 @@ Route::prefix('driver')->group(function () {
         Route::post('/website/homeScreen', 'Api\WebsiteController@DriverHomeScreen');
         Route::post('/check-droplocation/area', ['as' => 'api.droplocation-area', 'uses' => 'Api\HomeController@CheckDropLocation']);
         Route::post('/configuration', ['as' => 'api.driver.configuration', 'uses' => 'Api\DriverController@Configuration']);
-        Route::get('/fastlane-configuration', ['as' => 'api.user.configuration', 'uses' => 'Api\DriverController@FastLaneConfiguration']);
+        Route::get('/fastlane-configuration', ['as' => 'api.driver.fastlane-configuration', 'uses' => 'Api\DriverController@FastLaneConfiguration']);
 
         Route::post('/get-document-list', ['as' => 'api.document-list', 'uses' => 'Api\DriverController@getDocumentList']);
 
