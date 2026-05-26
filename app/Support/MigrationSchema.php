@@ -8,15 +8,13 @@ use Illuminate\Support\Facades\Schema;
 
 class MigrationSchema
 {
-    public static function dropForeignIfExists(string $table, string $column): void
+    public static function foreignKeyExists(string $table, string $constraintName): bool
     {
         if (!Schema::hasTable($table)) {
-            return;
+            return false;
         }
 
-        $constraintName = "{$table}_{$column}_foreign";
-
-        $exists = DB::selectOne(
+        return (bool) DB::selectOne(
             'SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
              WHERE TABLE_SCHEMA = DATABASE()
                AND TABLE_NAME = ?
@@ -24,13 +22,22 @@ class MigrationSchema
                AND CONSTRAINT_NAME = ?',
             [$table, 'FOREIGN KEY', $constraintName]
         );
+    }
 
-        if (!$exists) {
+    public static function dropForeignIfExists(string $table, string $column, ?string $indexName = null): void
+    {
+        if (!Schema::hasTable($table)) {
             return;
         }
 
-        Schema::table($table, function (Blueprint $blueprint) use ($column) {
-            $blueprint->dropForeign([$column]);
+        $constraintName = $indexName ?? "{$table}_{$column}_foreign";
+
+        if (!static::foreignKeyExists($table, $constraintName)) {
+            return;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint) use ($constraintName) {
+            $blueprint->dropForeign($constraintName);
         });
     }
 
@@ -99,7 +106,8 @@ class MigrationSchema
         string $column,
         string $referenceTable,
         string $onUpdate = 'RESTRICT',
-        string $onDelete = 'CASCADE'
+        string $onDelete = 'CASCADE',
+        ?string $indexName = null
     ): void {
         if (!Schema::hasTable($table) || !Schema::hasTable($referenceTable)) {
             return;
@@ -109,16 +117,24 @@ class MigrationSchema
             return;
         }
 
-        static::dropForeignIfExists($table, $column);
+        $constraintName = $indexName ?? "{$table}_{$column}_foreign";
+
+        if (static::foreignKeyExists($table, $constraintName)) {
+            return;
+        }
 
         Schema::table($table, function (Blueprint $blueprint) use (
             $column,
             $referenceTable,
             $onUpdate,
-            $onDelete
+            $onDelete,
+            $indexName
         ) {
-            $blueprint->foreign($column)
-                ->references('id')
+            $foreign = $indexName
+                ? $blueprint->foreign($column, $indexName)
+                : $blueprint->foreign($column);
+
+            $foreign->references('id')
                 ->on($referenceTable)
                 ->onUpdate($onUpdate)
                 ->onDelete($onDelete);
