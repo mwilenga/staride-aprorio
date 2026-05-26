@@ -11,14 +11,7 @@
 
     <link rel="apple-touch-icon" href="{{ asset('theme/images/apple-touch-icon.png') }}">
     @php
-        $merchantLogoUrl = asset('theme/images/favicon.ico');
-        if (!empty($merchant->BusinessLogo) && $merchant->BusinessLogo !== 'default_logo.png') {
-            try {
-                $merchantLogoUrl = get_image($merchant->BusinessLogo, 'business_logo', $merchant->id, true);
-            } catch (\Throwable $e) {
-                $merchantLogoUrl = asset('theme/images/favicon.ico');
-            }
-        }
+        $merchantLogoUrl = merchant_business_logo_url($merchant->BusinessLogo ?? '', $merchant->id);
     @endphp
     <link rel="shortcut icon" href="{{ $merchantLogoUrl }}">
 

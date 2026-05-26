@@ -12,7 +12,7 @@
     <title>Dashboard | {{ $merchant->BusinessName }}</title>
 
     <link rel="apple-touch-icon" href="{{ asset('theme/images/apple-touch-icon.png') }}">
-      <link rel="shortcut icon" href="{{ isset($merchant->BusinessLogo) && !empty($merchant->BusinessLogo) ? get_image($merchant->BusinessLogo,'business_logo',$merchant->id,true): asset('theme/images/favicon.ico') }}">
+      <link rel="shortcut icon" href="{{ merchant_business_logo_url($merchant->BusinessLogo ?? '', $merchant->id ?? null) }}">
   {{--    <link rel="shortcut icon" href="{{ asset('theme/images/favicon.ico') }}">--}}
 
     <!-- Stylesheets -->

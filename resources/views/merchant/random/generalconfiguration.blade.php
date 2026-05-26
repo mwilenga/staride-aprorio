@@ -1223,7 +1223,7 @@
                                     </div>
                                 </div>
                                 
-                                @if($application_theme->user_intro_screen)
+                                @if(optional($application_theme)->user_intro_screen)
                                 <h5 class="form-section">
                                     <i class="fa fa-credit-card"></i> @lang("$string_file.application_theme")
                                 </h5>
@@ -1238,8 +1238,8 @@
 
                                                     $userIntroText = [];
 
-                                                    if (!empty($application_theme->UserIntroText)) {
-                                                        $decoded = json_decode($application_theme->UserIntroText, true);
+                                                    if (!empty(optional($application_theme)->UserIntroText)) {
+                                                        $decoded = json_decode(optional($application_theme)->UserIntroText, true);
                                                        if (is_array($decoded) && !empty($decoded)) {
                                                             $userIntroText = $decoded;
                                                         }
@@ -1247,7 +1247,7 @@
 
                                                     /* Fallback to user_intro_screen */
                                                     if (empty($userIntroText)) {
-                                                        $fallback = json_decode($application_theme->user_intro_screen, true);
+                                                        $fallback = json_decode(optional($application_theme)->user_intro_screen, true);
                                                         $userIntroText = is_array($fallback) ? $fallback : [];
                                                     }
 

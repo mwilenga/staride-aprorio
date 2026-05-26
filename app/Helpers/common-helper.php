@@ -93,7 +93,21 @@ function setS3Config($merchant)
     \Config::set('filesystems.disks.s3', $s3Data);
 }
 
+/**
+ * Merchant business logo URL; avoids broken S3 links when default_logo.png was never uploaded.
+ */
+function merchant_business_logo_url($fileName, $merchantId, $signedUrl = true)
+{
+    if (empty($fileName) || $fileName === 'default_logo.png') {
+        return asset('theme/images/favicon.ico');
+    }
 
+    try {
+        return get_image($fileName, 'business_logo', $merchantId, true, $signedUrl);
+    } catch (\Throwable $e) {
+        return asset('theme/images/favicon.ico');
+    }
+}
 
 // functions to get images from s3 bucket
 function get_image($file_name = '', $custom_key = '', $merchant_id = NULL, $merchant = true, $signed_url = true, $session ="",$extra="", $download = false)

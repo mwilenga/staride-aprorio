@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ApplicationTheme;
 use App\Models\ApplicationConfiguration;
 use App\Models\BookingConfiguration;
 use App\Models\Configuration;
@@ -71,6 +72,11 @@ class BootstrapStarideMerchant extends Command
             DriverConfiguration::create(['merchant_id' => $merchant->id]);
             BookingConfiguration::create(['merchant_id' => $merchant->id]);
             ApplicationConfiguration::create(['merchant_id' => $merchant->id]);
+            // Some merchant admin pages expect ApplicationTheme to exist.
+            ApplicationTheme::firstOrCreate(
+                ['merchant_id' => $merchant->id],
+                []
+            );
 
             $role = Role::create([
                 'merchant_id' => $merchant->id,

@@ -11,7 +11,7 @@
       <i class="icon wb-more-horizontal" aria-hidden="true"></i>
     </button>
     <div class="navbar-brand navbar-brand-center">
-      <img class="navbar-brand-logo" src="{{ get_image(Auth::user()->BusinessLogo,'business_logo',Auth::user()->id,true) }}" title="{{ (Auth::user()->BusinessName) }}">
+      <img class="navbar-brand-logo" src="{{ merchant_business_logo_url(Auth::user()->BusinessLogo, Auth::user()->id) }}" title="{{ (Auth::user()->BusinessName) }}">
       <span class="navbar-brand-text hidden-xs-down">{{ (Auth::user()->BusinessName) }}</span>
     </div>
   </div>
@@ -93,7 +93,7 @@
           <a class="nav-link navbar-avatar" id="profile" data-toggle="dropdown" href="#" aria-expanded="false"
              data-animation="scale-up" role="button">
                 <span class="avatar avatar-online">
-                  <img src="{{ get_image(Auth::user()->BusinessLogo,'business_logo',Auth::user()->id,true) }}" alt="...">
+                  <img src="{{ merchant_business_logo_url(Auth::user()->BusinessLogo, Auth::user()->id) }}" alt="...">
                   <i></i>
                 </span>
           </a>
