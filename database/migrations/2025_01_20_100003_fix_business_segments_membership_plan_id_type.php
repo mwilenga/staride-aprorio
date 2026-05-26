@@ -5,6 +5,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Safety migration if 100001 was already recorded or failed with int/bigint mismatch.
+ */
 return new class extends Migration
 {
     public function up()
@@ -35,7 +38,6 @@ return new class extends Migration
 
     public function down()
     {
-        MigrationSchema::dropForeignKeysOnColumn('business_segments', 'membership_plan_id');
         MigrationSchema::dropForeignIfExists('business_segments', 'membership_plan_id', 'bs_membership_plan_id_fk');
     }
 };

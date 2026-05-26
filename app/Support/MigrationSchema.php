@@ -82,13 +82,44 @@ class MigrationSchema
         });
     }
 
-    public static function recreateColumn(string $table, string $column, callable $columnDefinition): void
+    public static function dropForeignKeysOnColumn(string $table, string $column): void
     {
         if (!Schema::hasTable($table)) {
             return;
         }
 
-        static::dropForeignIfExists($table, $column);
+        $constraints = DB::select(
+            'SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = ?
+               AND COLUMN_NAME = ?
+               AND REFERENCED_TABLE_NAME IS NOT NULL',
+            [$table, $column]
+        );
+
+        foreach ($constraints as $row) {
+            DB::statement("ALTER TABLE `{$table}` DROP FOREIGN KEY `{$row->CONSTRAINT_NAME}`");
+        }
+    }
+
+    public static function modifyColumnToUnsignedBigInt(string $table, string $column, bool $nullable = true): void
+    {
+        if (!Schema::hasTable($table) || !Schema::hasColumn($table, $column)) {
+            return;
+        }
+
+        $nullSql = $nullable ? 'NULL' : 'NOT NULL';
+        DB::statement("ALTER TABLE `{$table}` MODIFY `{$column}` BIGINT UNSIGNED {$nullSql}");
+    }
+
+    public static function recreateColumn(string $table, string $column, callable $columnDefinition, ?string $indexName = null): void
+    {
+        if (!Schema::hasTable($table)) {
+            return;
+        }
+
+        static::dropForeignKeysOnColumn($table, $column);
+        static::dropForeignIfExists($table, $column, $indexName);
 
         if (Schema::hasColumn($table, $column)) {
             Schema::table($table, function (Blueprint $blueprint) use ($column) {
