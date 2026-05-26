@@ -21,7 +21,9 @@ class DebugBarMiddleware
      * @return mixed
      */
     public function handle($request, Closure $next){
-        app('debugbar')->disable();
+        if (app()->bound('debugbar')) {
+            app('debugbar')->disable();
+        }
 
         $value = \Session::get('developer');
         $pin = base64_decode($value);

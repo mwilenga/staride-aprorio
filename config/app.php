@@ -183,7 +183,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
     /*
@@ -235,7 +234,6 @@ return [
         'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Image' => \Intervention\Image\Facades\Image::class,
-        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
     ],
 
 ];

@@ -22,7 +22,9 @@ class AdminS3
 
         // if not set session or session value is blank
         //        if(!Session::has('locale') || (Session::has('locale') &&   empty(Session::get('locale'))))
-        app('debugbar')->disable();
+        if (app()->bound('debugbar')) {
+            app('debugbar')->disable();
+        }
         $merchant = NULL;
         if (Auth::guard('merchant')->check()) {
             $merchant = Auth::user('merchant');
