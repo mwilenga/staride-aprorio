@@ -13,7 +13,11 @@ return new class extends Migration
         Schema::create('language_merchant_membership_plans', function (Blueprint $table) {
             $table->id();
             $table->integer('merchant_membership_plan_id')->unsigned();
-            $table->foreign('merchant_membership_plan_id')->references('id')->on('merchant_membership_plans')->onUpdate('RESTRICT')->onDelete('CASCADE');
+            $table->foreign('merchant_membership_plan_id', 'lmmp_plan_id_fk')
+                ->references('id')
+                ->on('merchant_membership_plans')
+                ->onUpdate('RESTRICT')
+                ->onDelete('CASCADE');
             $table->string('plan_title')->nullable();
             $table->text('description')->nullable();
             $table->string('locale')->default('en');

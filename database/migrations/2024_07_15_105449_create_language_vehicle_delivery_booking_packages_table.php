@@ -18,7 +18,11 @@ return new class extends Migration
             $table->integer('booking_id')->unsigned();
             $table->foreign('booking_id')->references('id')->on('bookings')->onUpdate('RESTRICT')->onDelete('CASCADE');
             $table->integer('booking_delivery_detail_id')->unsigned();
-            $table->foreign('booking_delivery_detail_id')->references('id')->on('booking_delivery_details')->onUpdate('RESTRICT')->onDelete('CASCADE');
+            $table->foreign('booking_delivery_detail_id', 'vdbp_booking_del_detail_fk')
+                ->references('id')
+                ->on('booking_delivery_details')
+                ->onUpdate('RESTRICT')
+                ->onDelete('CASCADE');
             $table->string('quantity')->nullable();
             $table->timestamps();
         });
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('language_merchant_membership_plans');
+        Schema::dropIfExists('vehicle_delivery_booking_packages');
     }
 };

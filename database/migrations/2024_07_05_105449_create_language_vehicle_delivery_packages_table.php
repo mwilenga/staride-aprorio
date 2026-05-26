@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('language_vehicle_delivery_packages', function (Blueprint $table) {
             $table->id();
             $table->integer('vehicle_delivery_package_id')->unsigned();
-            $table->foreign('vehicle_delivery_package_id')->references('id')->on('vehicle_delivery_packages')->onUpdate('RESTRICT')->onDelete('CASCADE');
+            $table->foreign('vehicle_delivery_package_id', 'lvdp_vdp_id_fk')
+                ->references('id')
+                ->on('vehicle_delivery_packages')
+                ->onUpdate('RESTRICT')
+                ->onDelete('CASCADE');
             $table->string('package_name')->nullable();
             $table->string('locale', 10)->index();
             $table->timestamps();
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('language_merchant_membership_plans');
+        Schema::dropIfExists('language_vehicle_delivery_packages');
     }
 };
