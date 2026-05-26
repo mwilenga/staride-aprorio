@@ -1,41 +1,78 @@
 <?php
 
-use App\Support\MigrationSchema;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    private const TABLE = 'business_segments';
+    private const COLUMN = 'membership_plan_id';
+    private const FK_NAME = 'bs_membership_plan_id_fk';
+    private const REF_TABLE = 'merchant_membership_plans';
+
+    public function up(): void
     {
-        if (!Schema::hasTable('business_segments') || !Schema::hasTable('merchant_membership_plans')) {
+        if (!Schema::hasTable(self::TABLE) || !Schema::hasTable(self::REF_TABLE)) {
             return;
         }
 
-        MigrationSchema::dropForeignKeysOnColumn('business_segments', 'membership_plan_id');
+        $this->dropMembershipPlanForeignKeys();
 
-        if (!Schema::hasColumn('business_segments', 'membership_plan_id')) {
-            Schema::table('business_segments', function (Blueprint $table) {
-                $table->unsignedBigInteger('membership_plan_id')->nullable();
-            });
-        } else {
-            MigrationSchema::modifyColumnToUnsignedBigInt('business_segments', 'membership_plan_id', true);
+        if (Schema::hasColumn(self::TABLE, self::COLUMN)) {
+            DB::statement(
+                'ALTER TABLE `' . self::TABLE . '` DROP COLUMN `' . self::COLUMN . '`'
+            );
         }
 
-        MigrationSchema::ensureForeign(
-            'business_segments',
-            'membership_plan_id',
-            'merchant_membership_plans',
-            'RESTRICT',
-            'CASCADE',
-            'bs_membership_plan_id_fk'
+        DB::statement(
+            'ALTER TABLE `' . self::TABLE . '` ADD `' . self::COLUMN . '` BIGINT UNSIGNED NULL'
         );
+
+        $exists = DB::selectOne(
+            'SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = ?
+               AND CONSTRAINT_NAME = ?',
+            [self::TABLE, self::FK_NAME]
+        );
+
+        if (!$exists) {
+            DB::statement(
+                'ALTER TABLE `' . self::TABLE . '`
+                 ADD CONSTRAINT `' . self::FK_NAME . '`
+                 FOREIGN KEY (`' . self::COLUMN . '`)
+                 REFERENCES `' . self::REF_TABLE . '` (`id`)
+                 ON DELETE CASCADE
+                 ON UPDATE RESTRICT'
+            );
+        }
     }
 
-    public function down()
+    public function down(): void
     {
-        MigrationSchema::dropForeignKeysOnColumn('business_segments', 'membership_plan_id');
-        MigrationSchema::dropForeignIfExists('business_segments', 'membership_plan_id', 'bs_membership_plan_id_fk');
+        if (!Schema::hasTable(self::TABLE)) {
+            return;
+        }
+
+        $this->dropMembershipPlanForeignKeys();
+    }
+
+    private function dropMembershipPlanForeignKeys(): void
+    {
+        $foreignKeys = DB::select(
+            'SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_NAME = ?
+               AND COLUMN_NAME = ?
+               AND REFERENCED_TABLE_NAME IS NOT NULL',
+            [self::TABLE, self::COLUMN]
+        );
+
+        foreach ($foreignKeys as $foreignKey) {
+            DB::statement(
+                'ALTER TABLE `' . self::TABLE . '` DROP FOREIGN KEY `' . $foreignKey->CONSTRAINT_NAME . '`'
+            );
+        }
     }
 };
