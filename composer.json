@@ -97,7 +97,7 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php -r \"foreach (['bootstrap/cache/packages.php', 'bootstrap/cache/services.php'] as \\$f) { if (is_file(\\$f)) { unlink(\\$f); } }\""
+            "@php -r \"foreach (['bootstrap/cache/packages.php', 'bootstrap/cache/services.php'] as \\$f) { if (is_file(\\$f)) { unlink(\\$f); } } foreach (['storage/framework/cache/data', 'storage/framework/sessions', 'storage/framework/views'] as \\$d) { if (!is_dir(\\$d)) { mkdir(\\$d, 0755, true); } }\""
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
