@@ -94,11 +94,11 @@ function setS3Config($merchant)
 }
 
 /**
- * Merchant business logo URL; avoids broken S3 links when default_logo.png was never uploaded.
+ * Merchant business logo URL.
  */
 function merchant_business_logo_url($fileName, $merchantId, $signedUrl = true)
 {
-    if (empty($fileName) || $fileName === 'default_logo.png') {
+    if (empty($fileName)) {
         return asset('theme/images/favicon.ico');
     }
 
