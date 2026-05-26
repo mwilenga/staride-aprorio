@@ -33,3 +33,6 @@ config/error_log
 database/migrations/error_log
 queue.log
 .htaccess
+
+
+composer.lock
