@@ -75,10 +75,13 @@ function setS3Config($merchant)
     }
 
     $file_system = json_decode($merchant->file_system_config, true);
-    if(empty($file_system)){
+    if (empty($file_system) || empty($file_system['s3'])) {
         abort(409);
     }
     $s3 = $file_system['s3'];
+    if (empty($s3['access_key']) || empty($s3['secret_key']) || empty($s3['bucket']) || empty($s3['region'])) {
+        abort(409);
+    }
     $s3Data = [
         'driver' => $s3['driver'],
         'key' => $s3['access_key'],
@@ -143,16 +146,12 @@ function get_image($file_name = '', $custom_key = '', $merchant_id = NULL, $merc
 
     // return signed url
     $sharedConfig = [
-        'region' => \Config::get('filesystems.disks.s3.region'), //'ap-south-1',//env('AWS_DEFAULT_REGION'),
+        'region' => \Config::get('filesystems.disks.s3.region'),
         'version' => 'latest',
         'credentials' => [
-            'driver' => \Config::get('filesystems.disks.s3.driver'),
-            'key' => \Config::get('filesystems.disks.s3.key'), //env('AWS_ACCESS_KEY_ID'),
-            'secret' => \Config::get('filesystems.disks.s3.secret'), //env('AWS_SECRET_ACCESS_KEY'),
-            'region' => \Config::get('filesystems.disks.s3.region'), //env('AWS_DEFAULT_REGION'),
-            'bucket' => \Config::get('filesystems.disks.s3.bucket'), //env('AWS_BUCKET'),
-            'url' => \Config::get('filesystems.disks.s3.url')
-        ]
+            'key' => \Config::get('filesystems.disks.s3.key'),
+            'secret' => \Config::get('filesystems.disks.s3.secret'),
+        ],
     ];
 
     $s3Client = new S3Client($sharedConfig);
@@ -210,16 +209,12 @@ function view_config_image($return_file)
 
     // return signed url
     $sharedConfig = [
-        'region' => \Config::get('filesystems.disks.s3.region'), //'ap-south-1',//env('AWS_DEFAULT_REGION'),
+        'region' => \Config::get('filesystems.disks.s3.region'),
         'version' => 'latest',
         'credentials' => [
-            'driver' => \Config::get('filesystems.disks.s3.driver'),
-            'key' => \Config::get('filesystems.disks.s3.key'), //env('AWS_ACCESS_KEY_ID'),
-            'secret' => \Config::get('filesystems.disks.s3.secret'), //env('AWS_SECRET_ACCESS_KEY'),
-            'region' => \Config::get('filesystems.disks.s3.region'), //env('AWS_DEFAULT_REGION'),
-            'bucket' => \Config::get('filesystems.disks.s3.bucket'), //env('AWS_BUCKET'),
-            'url' => \Config::get('filesystems.disks.s3.url')
-        ]
+            'key' => \Config::get('filesystems.disks.s3.key'),
+            'secret' => \Config::get('filesystems.disks.s3.secret'),
+        ],
     ];
 
     $s3Client = new S3Client($sharedConfig);

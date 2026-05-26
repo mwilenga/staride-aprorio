@@ -10,8 +10,17 @@
     <title>Login | {{ $merchant->BusinessName }}</title>
 
     <link rel="apple-touch-icon" href="{{ asset('theme/images/apple-touch-icon.png') }}">
-    <link rel="shortcut icon"
-          href="{{ isset($merchant->BusinessLogo) && !empty($merchant->BusinessLogo) ? get_image($merchant->BusinessLogo,'business_logo',$merchant->id,true): asset('theme/images/favicon.ico') }}">
+    @php
+        $merchantLogoUrl = asset('theme/images/favicon.ico');
+        if (!empty($merchant->BusinessLogo) && $merchant->BusinessLogo !== 'default_logo.png') {
+            try {
+                $merchantLogoUrl = get_image($merchant->BusinessLogo, 'business_logo', $merchant->id, true);
+            } catch (\Throwable $e) {
+                $merchantLogoUrl = asset('theme/images/favicon.ico');
+            }
+        }
+    @endphp
+    <link rel="shortcut icon" href="{{ $merchantLogoUrl }}">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ asset('global/css/bootstrap.min.css') }}">
@@ -35,7 +44,15 @@
     Breakpoints();
     </script>
     @php
-        $image = isset($merchant->ApplicationTheme->login_background_image) && !empty($merchant->ApplicationTheme->login_background_image) ? get_image($merchant->ApplicationTheme->login_background_image,'login_background',$merchant->id,true) : asset("theme/examples/images/login.jpg");
+        $image = asset('theme/examples/images/login.jpg');
+        $loginBg = optional($merchant->ApplicationTheme)->login_background_image;
+        if (!empty($loginBg)) {
+            try {
+                $image = get_image($loginBg, 'login_background', $merchant->id, true);
+            } catch (\Throwable $e) {
+                $image = asset('theme/examples/images/login.jpg');
+            }
+        }
     @endphp
     <style>
         .rc-anchor-light {
@@ -63,7 +80,7 @@
 <div class="page vertical-align text-center" data-animsition-in="fade-in" data-animsition-out="fade-out">>
     <div class="page-content vertical-align-middle animation-slide-top animation-duration-1">
         <div class="brand" style="margin-bottom: 22px;">
-            <img class="brand-img w-200 h-200" src="{{ get_image($merchant->BusinessLogo,'business_logo',$merchant->id,true) }}" alt="...">
+            <img class="brand-img w-200 h-200" src="{{ $merchantLogoUrl }}" alt="...">
             {{--      <h2 class="brand-text">{{ $merchant->BusinessName }}</h2>--}}
         </div>
         <form method="POST" action="{{ route('merchant.login.submit',$merchant->alias_name) }}" style="margin:0px 0px;">
