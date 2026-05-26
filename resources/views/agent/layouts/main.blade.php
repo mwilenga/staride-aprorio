@@ -1,0 +1,5 @@
+@include('agent.element.header')
+@include('agent.element.sidebar')
+@include('agent.element.nav')
+@yield('content')
+@include('agent.element.footer')

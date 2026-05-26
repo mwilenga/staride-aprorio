@@ -1,0 +1,5 @@
+@include('handyman-store.element.header')
+@include('handyman-store.element.nav')
+@include('handyman-store.element.sidebar')
+@yield('content')
+@include('handyman-store.element.footer')

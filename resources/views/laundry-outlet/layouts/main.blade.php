@@ -1,0 +1,5 @@
+@include('laundry-outlet.element.header')
+@include('laundry-outlet.element.nav')
+@include('laundry-outlet.element.sidebar')
+@yield('content')
+@include('laundry-outlet.element.footer')
