@@ -16,7 +16,7 @@ class AddSlugToAppNavigationDrawersTable extends Migration
         Schema::table('app_navigation_drawers', function (Blueprint $table) {
             $columns = [
                 'slug' => function (Blueprint $table) {
-                    // $table->text('slug')->after('status')->nullable();
+                    $table->text('slug')->after('status')->nullable();
                 },
             ];
 
