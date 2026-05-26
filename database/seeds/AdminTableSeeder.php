@@ -14,8 +14,8 @@ class AdminTableSeeder extends Seeder
     {
         // Default password for Apporio admin is - 1234567
         DB::table('admins')->insert([
-            'name' => 'Apporio',
-            'email' => 'hello@apporio.com',
+            'name' => 'AkiliApp',
+            'email' => 'hello@akiliapp.com',
             'password' => '$2y$10$08yPJYPFyL/KsQ15fEXX/eGerRk/pP51uGUgepOC1ARNszoJ9/sbW',
             'remember_token' => '',
             'created_at' => Carbon::now()->toDateTimeString(),
